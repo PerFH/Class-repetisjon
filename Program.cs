@@ -66,7 +66,6 @@ Player selectClass()
     {
         case "1":
             Console.WriteLine("You have selected Warrior.");
-            File.WriteAllText("playerClass.txt", "Warrior");
             return new Warrior();
         case "2":
             Console.WriteLine("You have selected Mage.");
