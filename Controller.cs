@@ -1,9 +1,9 @@
 public class Controller
 {
-
-    Player startGame()
+Datasource datasource = new Datasource();
+    public Player startGame()
     {
-        switch (continueChoice)
+        switch (View.introMessage())
         {
             case "y":
                 return continueGame();
@@ -11,7 +11,8 @@ public class Controller
             case "n":
                 return selectClass();
             default:
-                Console.WriteLine("Invalid choice. Please enter 'y' or 'n'.");
+                View.invalidMessage();
+
                 return startGame();
 
         }
@@ -26,60 +27,67 @@ public class Controller
             player.Attack(enemy);
             if (enemy.Health <= 0)
             {
-                Console.WriteLine("Enemy defeated!");
-                Datasource.SavePlayer(player);
+                View.winMessage();
+                datasource.SavePlayer(player);
                 break;
             }
             enemy.Attack(player);
             if (player.Health <= 0)
             {
-                Console.WriteLine("Player defeated!");
-                Datasource.DeletePlayerData();
+                View.loseMessage();
+                datasource.deletePlayerData();
                 break;
             }
         }
     }
     Player continueGame()
     {
-        if (File.Exists("playerData.json"))
+        if (datasource.fileExists)
         {
-            string savedPlayer = File.ReadAllText("playerData.json");
-            Player player = Datasource.LoadPlayer();
-            Console.WriteLine($"Welcome back! Your health is {player.Health} and your attack power is {player.AttackPower}.");
-            doCombat(player, new Enemy(50, 10));
+            Player player = datasource.LoadPlayer();
+            View.continueMessage(player);
+            doCombat(player, getEnemy());
             return player;
         }
         else
         {
-            Console.WriteLine("No saved game found. Starting a new game.");
+            View.noSave();
+
             return selectClass();
         }
     }
     Player selectClass()
     {
-        Console.WriteLine("Select your class: 1. Warrior 2. Mage");
+        View.selectClass();
         string? classChoice = Console.ReadLine();
         switch (classChoice)
         {
             case "1":
-                Console.WriteLine("You have selected Warrior.");
+                View.warriorSelect();
                 return new Warrior();
             case "2":
-                Console.WriteLine("You have selected Mage.");
+                View.mageSelect();
                 return new Mage();
             default:
-                Console.WriteLine("Invalid choice. 1 for Warrior, 2 for Mage.");
+                View.invalidClassOption();
                 return selectClass();
         }
     }
-        public int getEnemyHealth()
+
+    Enemy getEnemy()
     {
+        Random variety = new Random();
+        Enemy enemy = new Enemy(getEnemyHealth(), getEnemyAttackPower());
+        int getEnemyHealth()
+        {
         int enemyHealth = variety.Next(50, 101);
         return enemyHealth;
-    }
-    public int getEnemyAttackPower()
-    {
+        }
+        int getEnemyAttackPower()
+        {
         int enemyAttackPower = variety.Next(10, 21);
         return enemyAttackPower;
+        }
+        return enemy;
     }
 }
