@@ -2,7 +2,13 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 public class Datasource
 {
-    public Boolean fileExists;
+    public bool fileExists
+    {
+        get
+        {
+            return File.Exists(getFile());
+        }
+    }
     private string getFile()
     {
         return "playerData.json";
@@ -15,9 +21,8 @@ public class Datasource
 
     public Player LoadPlayer()
     {
-        if (File.Exists(getFile()))
+        if (fileExists)
         { 
-            fileExists = true;
             string savedPlayer = File.ReadAllText(getFile());
             Player player = JsonSerializer.Deserialize<Player>(savedPlayer);
             return player;

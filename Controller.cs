@@ -1,3 +1,6 @@
+using System.Reflection.Metadata;
+using System.Security.Cryptography.X509Certificates;
+
 public class Controller
 {
 Datasource datasource = new Datasource();
@@ -20,8 +23,6 @@ Datasource datasource = new Datasource();
 
     void doCombat(Player player, Enemy enemy)
     {
-
-
         while (true)
         {
             player.Attack(enemy);
@@ -40,11 +41,12 @@ Datasource datasource = new Datasource();
             }
         }
     }
-    Player continueGame()
+    public Player continueGame()
     {
         if (datasource.fileExists)
         {
             Player player = datasource.LoadPlayer();
+            
             View.continueMessage(player);
             doCombat(player, getEnemy());
             return player;
@@ -60,18 +62,29 @@ Datasource datasource = new Datasource();
     {
         View.selectClass();
         string? classChoice = Console.ReadLine();
+        
         switch (classChoice)
         {
             case "1":
+                
                 View.warriorSelect();
-                return new Warrior();
+                Player player = new Warrior();
+                datasource.SavePlayer(player);
+                //datasource.fileExists = true;                
+                continueGame();
+                return player;
             case "2":
                 View.mageSelect();
+                player = new Mage();
+                datasource.SavePlayer(player);
+                //datasource.fileExists = true;
+                continueGame();
                 return new Mage();
             default:
                 View.invalidClassOption();
                 return selectClass();
         }
+    
     }
 
     Enemy getEnemy()
